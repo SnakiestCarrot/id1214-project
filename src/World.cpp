@@ -1,9 +1,9 @@
 
 #include <iostream>
 
-#include "world.hpp"
-#include "snake.hpp"
-#include "food.hpp"
+#include "World.hpp"
+#include "Snake.hpp"
+#include "Food.hpp"
 
 // Use an initializer list to store the reference
 World::World(Snake& snake, Food& food) : snake(snake), food(food) {

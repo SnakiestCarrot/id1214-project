@@ -1,7 +1,8 @@
 #pragma once
 
-#include "snake.hpp"
-#include "food.hpp"
+#include "Snake.hpp"
+#include "Food.hpp"
+#include "NeuralNetwork.hpp"
 #include <SDL2/SDL.h>
 
 class World {
@@ -11,6 +12,7 @@ public:
     void draw(SDL_Renderer *renderer);
     void handle_input(SDL_Event& event);
     void reset();
+    void handle_input(NeuralNetwork& nn);
 
 private:
     Snake& snake;

@@ -1,4 +1,4 @@
-#include "snake.hpp"
+#include "Snake.hpp"
 #include <SDL2/SDL.h>
 #include <iostream>
 

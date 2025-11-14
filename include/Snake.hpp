@@ -2,7 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <deque>
-#include "point.hpp"
+#include "Point.hpp"
 
 enum Direction {
     UP,

@@ -1,9 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <SDL2/SDL.h>
-#include "snake.hpp"
-#include "world.hpp"
-#include "food.hpp"
+#include "Snake.hpp"
+#include "World.hpp"
+#include "Food.hpp"
 
 #define FPS 15
 

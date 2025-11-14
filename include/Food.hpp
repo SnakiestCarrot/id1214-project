@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "point.hpp"
+#include "Point.hpp"
 
 class Food {
 public:
