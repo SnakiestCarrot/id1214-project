@@ -78,3 +78,30 @@ void Snake::draw_body_part(SDL_Renderer *renderer, Point part) {
     };
     SDL_RenderFillRect(renderer, &rect);
 }
+
+bool Snake::hit_itself() {
+    if(this->body.size() < 2) {
+        return false; // A snake with less than 2 parts can't hit itself
+    }
+
+    Point head = this->body.front();
+    for(size_t i = 1; i < this->body.size(); ++i) {
+        if(head == this->body[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Snake::grow() {
+    body.push_back(body.back());
+}
+
+bool Snake::is_point_on_body(const Point& point) {
+    for (const auto& part : body) {
+        if (part == point) {
+            return true;
+        }
+    }
+    return false;
+}

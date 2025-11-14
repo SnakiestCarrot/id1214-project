@@ -31,30 +31,29 @@ void World::draw_grid(SDL_Renderer *renderer) {
 }
 
 void World::update() {
-    this->snake.update();
+    snake.update();
 
-    if(snake.body.front().x < 0 || snake.body.front().x >= width / cell_size ||
-       snake.body.front().y < 0 || snake.body.front().y >= height / cell_size) {
-        this->reset();
+    if(snake_hit_wall() || snake.hit_itself()) {
+        reset();
     }
 
-    // Check if snake head hit food
-    if(snake.body.front() == food.position) {
-        snake.body.push_back(snake.body.back());
-        food.position = Point{rand() % (width / cell_size), rand() % (height / cell_size)};
-        score++;
-    }
+    if(snake_is_eating_food()) {
+        snake.grow();
 
-    // Check if snake head hit its own body
-    if(snake.body.size() > 1) {
-        Point head = snake.body.front();
-        for(size_t i = 1; i < snake.body.size(); ++i) {
-            if(head == snake.body[i]) {
-                std::cout << "Snake hit itself!" << std::endl;
-                this->reset();
-                break;
+        // check food is not spawned on the snake body
+        bool onSnake;
+        int max_x = width / cell_size;
+        int max_y = height / cell_size;
+        do {
+            onSnake = false;
+
+            food.move_randomly(max_x, max_y);
+
+            if (snake.is_point_on_body(food.position)) {
+                onSnake = true;
             }
-        }
+        } while(onSnake);
+        score++;
     }
 }
 
@@ -90,6 +89,17 @@ void World::reset() {
     this->snake.body.push_back({23, 25});
     this->snake.direction = RIGHT;
     this->food.position = Point{10, 10};
+
     std::cout << "Score: " << this->score << std::endl;
     this->score = 0;
+}
+
+bool World::snake_is_eating_food() {
+    return this->snake.body.front() == this->food.position;
+}
+
+bool World::snake_hit_wall() {
+    Point head = this->snake.body.front();
+    return head.x < 0 || head.x >= width / cell_size ||
+           head.y < 0 || head.y >= height / cell_size;
 }

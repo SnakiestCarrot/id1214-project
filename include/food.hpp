@@ -10,4 +10,5 @@ public:
     Food(int x, int y);
     void draw(SDL_Renderer *renderer);
     Point position;
+    void move_randomly(int max_x, int max_y);
 };

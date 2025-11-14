@@ -20,4 +20,6 @@ private:
     int cell_size;
     int score;
     void draw_grid(SDL_Renderer *renderer);
+    bool snake_is_eating_food();
+    bool snake_hit_wall();
 };

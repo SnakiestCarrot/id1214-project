@@ -19,3 +19,8 @@ void Food::draw(SDL_Renderer *renderer) {
     foodRect.h = CELL_SIZE;
     SDL_RenderFillRect(renderer, &foodRect);
 }
+
+void Food::move_randomly(int max_x, int max_y) {
+    this->position.x = rand() % max_x;
+    this->position.y = rand() % max_y;
+}
