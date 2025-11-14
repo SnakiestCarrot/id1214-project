@@ -1,2 +1,4 @@
 *.o
 snake
+.vscode
+build
