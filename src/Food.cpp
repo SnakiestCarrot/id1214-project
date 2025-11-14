@@ -1,8 +1,8 @@
 
 #include <SDL2/SDL.h>
 
-#include "food.hpp"
-#include "point.hpp"
+#include "Food.hpp"
+#include "Point.hpp"
 
 const int CELL_SIZE = 20;
 
