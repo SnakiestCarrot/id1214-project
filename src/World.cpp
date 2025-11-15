@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <iterator>
+#include <cmath>
 
 #include "World.hpp"
 #include "Snake.hpp"
@@ -92,7 +93,6 @@ void World::reset() {
     this->snake.direction = RIGHT;
     this->food.position = Point{10, 10};
 
-    std::cout << "Score: " << this->score << std::endl;
     this->score = 0;
 }
 
@@ -107,72 +107,140 @@ bool World::snake_hit_wall() {
 }
 
 std::vector<double> World::get_game_state() {
-    Point head = snake.body.front();
+    Point head = snake.body.front(); // head
+    Point tail = snake.body.back(); // tail
+    Direction dir = snake.direction; // heading
+    Point food_pos = food.position; // food position
 
-    // 1. Define the 4 absolute points to check for danger
-    Point p_up = {head.x, head.y - 1};
-    Point p_down = {head.x, head.y + 1};
-    Point p_left = {head.x - 1, head.y};
-    Point p_right = {head.x + 1, head.y};
+    // define relative points
+    Point p_straight, p_left, p_right;
+    switch (dir) {
+        case UP:
+            p_straight = {head.x, head.y - 1};
+            p_left =     {head.x - 1, head.y};
+            p_right =    {head.x + 1, head.y};
+            break;
+        case DOWN:
+            p_straight = {head.x, head.y + 1};
+            p_left =     {head.x + 1, head.y};
+            p_right =    {head.x - 1, head.y};
+            break;
+        case LEFT:
+            p_straight = {head.x - 1, head.y};
+            p_left =     {head.x, head.y + 1};
+            p_right =    {head.x, head.y - 1};
+            break;
+        case RIGHT:
+            p_straight = {head.x + 1, head.y};
+            p_left =     {head.x, head.y - 1};
+            p_right =    {head.x, head.y + 1};
+            break;
+    }
 
-    // 2. Create the input vector
     std::vector<double> inputs;
 
-    // Inputs 0-3: Danger in 4 absolute directions (1.0 = danger, 0.0 = safe)
-    inputs.push_back(is_danger_at(p_up) ? 1.0 : 0.0);
-    inputs.push_back(is_danger_at(p_down) ? 1.0 : 0.0);
+    // danger detection
     inputs.push_back(is_danger_at(p_left) ? 1.0 : 0.0);
+    inputs.push_back(is_danger_at(p_straight) ? 1.0 : 0.0);
     inputs.push_back(is_danger_at(p_right) ? 1.0 : 0.0);
 
-    // Inputs 4, 5: Food Direction (Normalized: -1, 0, or 1)
-    Point food_pos = food.position;
-    
-    // X-direction to food
-    if (food_pos.x < head.x) inputs.push_back(-1.0); // Food is to the left
-    else if (food_pos.x > head.x) inputs.push_back(1.0); // Food is to the right
-    else inputs.push_back(0.0); // Food is on the same column
+    // food direction
+    bool food_left = false;
+    bool food_right = false;
+    bool food_up = false;
+    bool food_down = false;
+    if (food_pos.x < head.x) food_left = true;
+    if (food_pos.x > head.x) food_right = true;
+    if (food_pos.y < head.y) food_up = true;
+    if (food_pos.y > head.y) food_down = true;
 
-    // Y-direction to food
-    if (food_pos.y < head.y) inputs.push_back(-1.0); // Food is above
-    else if (food_pos.y > head.y) inputs.push_back(1.0); // Food is below
-    else inputs.push_back(0.0); // Food is on the same row
+    // map food direction to relative directions based on current heading
+    switch (dir) {
+        case UP:
+            inputs.push_back(food_left ? 1.0 : 0.0);  // Food is Left
+            inputs.push_back(food_right ? 1.0 : 0.0); // Food is Right
+            inputs.push_back(food_up ? 1.0 : 0.0);    // Food is Straight
+            inputs.push_back(food_down ? 1.0 : 0.0);  // Food is Back
+            break;
+        case DOWN:
+            inputs.push_back(food_right ? 1.0 : 0.0); // Food is Left
+            inputs.push_back(food_left ? 1.0 : 0.0);  // Food is Right
+            inputs.push_back(food_down ? 1.0 : 0.0);  // Food is Straight
+            inputs.push_back(food_up ? 1.0 : 0.0);    // Food is Back
+            break;
+        case LEFT:
+            inputs.push_back(food_down ? 1.0 : 0.0);  // Food is Left
+            inputs.push_back(food_up ? 1.0 : 0.0);    // Food is Right
+            inputs.push_back(food_left ? 1.0 : 0.0);  // Food is Straight
+            inputs.push_back(food_right ? 1.0 : 0.0); // Food is Back
+            break;
+        case RIGHT:
+            inputs.push_back(food_up ? 1.0 : 0.0);    // Food is Left
+            inputs.push_back(food_down ? 1.0 : 0.0);  // Food is Right
+            inputs.push_back(food_right ? 1.0 : 0.0); // Food is Straight
+            inputs.push_back(food_left ? 1.0 : 0.0);  // Food is Back
+            break;
+    }
 
-    return inputs;
+    // tail direction
+    inputs.push_back(tail.x < head.x ? 1.0 : 0.0); // Tail is Left
+    inputs.push_back(tail.x > head.x ? 1.0 : 0.0); // Tail is Right
+    inputs.push_back(tail.y < head.y ? 1.0 : 0.0); // Tail is Up
+    inputs.push_back(tail.y > head.y ? 1.0 : 0.0); // Tail is Down
+
+    return inputs; // Final 11 inputs
 }
 
 void World::handle_ai_input(NeuralNetwork& brain) {
+    // 1. Get the current "senses" from the game world
     std::vector<double> inputs = get_game_state();
 
+    // 2. Feed them to the neural network
     std::vector<double> outputs = brain.feedForward(inputs);
 
+    // 3. Interpret the network's decision
+    // Find the index of the highest output value.
+    // 0 = Turn Left, 1 = Go Straight, 2 = Turn Right
     auto max_it = std::max_element(outputs.begin(), outputs.end());
     int decision = std::distance(outputs.begin(), max_it);
 
+    Direction current_dir = snake.direction;
+    Direction new_dir = current_dir;
+
     switch (decision) {
-        case 0: // Output 0 -> UP
-            snake.direction = UP;
+        case 0: // --- Turn Left (Relative)
+            if (current_dir == UP) new_dir = LEFT;
+            else if (current_dir == LEFT) new_dir = DOWN;
+            else if (current_dir == DOWN) new_dir = RIGHT;
+            else if (current_dir == RIGHT) new_dir = UP;
             break;
-        case 1: // Output 1 -> DOWN
-            snake.direction = DOWN;
+        
+        case 1: // --- Go Straight
+            // No change
             break;
-        case 2: // Output 2 -> LEFT
-            snake.direction = LEFT;
-            break;
-        case 3: // Output 3 -> RIGHT
-            snake.direction = RIGHT;
+
+        case 2: // --- Turn Right (Relative)
+            if (current_dir == UP) new_dir = RIGHT;
+            else if (current_dir == RIGHT) new_dir = DOWN;
+            else if (current_dir == DOWN) new_dir = LEFT;
+            else if (current_dir == LEFT) new_dir = UP;
             break;
     }
+    
+    snake.direction = new_dir;
 }
 
 bool World::is_danger_at(Point p) {
-    // 1. Check for wall collision
+    // wall collision
     if (p.x < 0 || p.x >= (width / cell_size) ||
         p.y < 0 || p.y >= (height / cell_size)) {
         return true;
     }
     
-    // 2. Check for self-collision
-    // This relies on your snake.is_point_on_body function
-    // being able to skip the tail.
+    // self collision
     return snake.is_point_on_body(p, true); 
+}
+
+int World::getScore() const {
+    return this->score;
 }

@@ -14,6 +14,8 @@ public:
     void handle_input(SDL_Event& event);
     void reset();
     void handle_ai_input(NeuralNetwork& nn);
+    int getScore() const;
+    bool snake_hit_wall();
 
 private:
     Snake& snake;
@@ -24,7 +26,6 @@ private:
     int score;
     void draw_grid(SDL_Renderer *renderer);
     bool snake_is_eating_food();
-    bool snake_hit_wall();
     std::vector<double> get_game_state();
     bool is_danger_at(Point p);
 };
