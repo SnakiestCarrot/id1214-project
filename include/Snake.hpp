@@ -20,7 +20,7 @@ public:
     Direction direction;
     bool hit_itself();
     void grow();
-    bool is_point_on_body(const Point& point);
+    bool is_point_on_body(Point p, bool skip_tail);
 
 private:
     void draw_body_part(SDL_Renderer *renderer, Point part);

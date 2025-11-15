@@ -4,6 +4,7 @@
 #include "Food.hpp"
 #include "NeuralNetwork.hpp"
 #include <SDL2/SDL.h>
+#include <vector>
 
 class World {
 public:
@@ -12,7 +13,7 @@ public:
     void draw(SDL_Renderer *renderer);
     void handle_input(SDL_Event& event);
     void reset();
-    void handle_input(NeuralNetwork& nn);
+    void handle_ai_input(NeuralNetwork& nn);
 
 private:
     Snake& snake;
@@ -24,4 +25,6 @@ private:
     void draw_grid(SDL_Renderer *renderer);
     bool snake_is_eating_food();
     bool snake_hit_wall();
+    std::vector<double> get_game_state();
+    bool is_danger_at(Point p);
 };
