@@ -14,7 +14,7 @@
 #include "Population.hpp"
 
 // --- SDL Settings ---
-#define FPS 50
+#define FPS 80
 const int START_SCREEN_X = 100;
 const int START_SCREEN_Y = 100;
 const int CELL_SIZE = 20;
