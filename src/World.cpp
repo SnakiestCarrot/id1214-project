@@ -14,6 +14,7 @@ World::World(Snake& snake, Food& food) : snake(snake), food(food) {
     this->height = 600;
     this->cell_size = 20;
     this->score = 0;
+    food.move_randomly(width / cell_size, height / cell_size);
 }
 
 void World::draw(SDL_Renderer *renderer) {
@@ -91,7 +92,7 @@ void World::reset() {
     this->snake.body.push_back({24, 25});
     this->snake.body.push_back({23, 25});
     this->snake.direction = RIGHT;
-    this->food.position = Point{10, 10};
+    food.move_randomly(width / cell_size, height / cell_size);
 
     this->score = 0;
 }

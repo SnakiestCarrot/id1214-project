@@ -39,6 +39,9 @@ public:
     /** @brief Returns the total size of the population. */
     size_t size() const { return population.size(); }
 
+    /** @brief Returns the average fitness of the population. */
+    double getAverageFitness() const;
+
 private:
     std::vector<NeuralNetwork> population;
     std::vector<double> fitness; // One fitness score for each brain

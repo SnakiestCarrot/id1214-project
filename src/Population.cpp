@@ -26,6 +26,14 @@ Population::Population(size_t popSize, const std::vector<size_t>& topology)
 
 // public methods
 
+double Population::getAverageFitness() const {
+    double totalFitness = 0.0;
+    for (double fit : fitness) {
+        totalFitness += fit;
+    }
+    return totalFitness / population.size();
+}
+
 NeuralNetwork& Population::getBrain(size_t index) {
     if (index >= population.size()) {
         throw std::out_of_range("Brain index out of range.");
@@ -92,11 +100,10 @@ void Population::evolve() {
  * We pick N random brains and the one with the highest fitness "wins".
  */
 NeuralNetwork& Population::selectParent() {
-    // How many brains to put in the tournament
     const int TOURNAMENT_SIZE = 5; 
     
     NeuralNetwork* winner = nullptr;
-    double best_fitness = -1.0; // Use -1.0 to handle 0-fitness brains
+    double best_fitness = -1.0;
 
     // pick random indexes for the tournament
     std::uniform_int_distribution<size_t> dist(0, population.size() - 1);
@@ -147,8 +154,8 @@ NeuralNetwork Population::crossover(NeuralNetwork& parentA, NeuralNetwork& paren
  * @brief Randomly alters the genes of a brain.
  */
 void Population::mutate(NeuralNetwork& brain) {
-    const double MUTATION_RATE = 0.05;
-    const double MUTATION_STRENGTH = 0.12; 
+    const double MUTATION_RATE = 0.08;
+    const double MUTATION_STRENGTH = 0.32; 
 
     std::vector<double> genes = brain.getGenes();
     
@@ -159,7 +166,6 @@ void Population::mutate(NeuralNetwork& brain) {
     std::normal_distribution<double> amountDist(0.0, MUTATION_STRENGTH);
 
     for (double& gene : genes) {
-        // check if this gene should mutate
         if (rateDist(ga_randomEngine) < MUTATION_RATE) {
             // Add a small random value +-N(0, MUTATION_STRENGTH)
             gene += amountDist(ga_randomEngine);
