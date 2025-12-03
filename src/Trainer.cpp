@@ -5,7 +5,6 @@
 #include <future>
 #include <cmath>
 
-// worker for multi-threaded fitness evaluation
 double evaluate_brain_fitness(const std::vector<size_t>& topology, const std::vector<double>& genes, int max_steps) {
     Snake snake;
     Food food(10, 10);
@@ -15,6 +14,7 @@ double evaluate_brain_fitness(const std::vector<size_t>& topology, const std::ve
     int steps = 0;
     int score_at_last_food = 0;
     int steps_since_last_food = 0;
+    
     while (!world.snake_hit_wall() && !snake.hit_itself() && steps < max_steps) {
         world.handle_ai_input(brain);
         world.update();
@@ -26,15 +26,17 @@ double evaluate_brain_fitness(const std::vector<size_t>& topology, const std::ve
         }
         if (steps_since_last_food > 150) break;
     }
+    
     return (double)steps + (double)(world.getScore() * 800);
 }
 
 Trainer::Trainer()
     : POPULATION_SIZE(500),
-      topology{11, 20, 12, 3},
+      topology{11, 3},
       game(), 
       population(POPULATION_SIZE, topology),
-      visualize_mode(false)
+      visualize_mode(false),
+      menu_mode(false)
 {
     if (!game.init()) {
         std::cerr << "Game failed to initialize!" << std::endl;
@@ -69,6 +71,19 @@ void Trainer::run() {
             run_visualization();
         } else {
             run_training_generation();
+        }
+
+        if(game.menuToggled()) {
+            menu_mode = !menu_mode;
+            std::cout << "Mode set to: " 
+                      << (menu_mode ? "Menu" : "Training") 
+                      << std::endl;
+            
+            if (menu_mode) {
+                
+            } else {
+                
+            }
         }
     }
 }

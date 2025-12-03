@@ -14,6 +14,7 @@ public:
     void pollEvents();
     bool shouldQuit() const;
     bool visualizeToggled() const;
+    bool menuToggled() const;
 
     void prepareScene();
     void presentScene();
@@ -25,4 +26,5 @@ private:
 
     bool m_shouldQuit;
     bool m_visualizeToggled;
+    bool m_menuToggled;
 };

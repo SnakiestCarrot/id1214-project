@@ -6,7 +6,8 @@ Game::Game()
     : window(nullptr), 
       renderer(nullptr), 
       m_shouldQuit(false), 
-      m_visualizeToggled(false)
+      m_visualizeToggled(false),
+      m_menuToggled(false)
 {
     
 }
@@ -67,6 +68,8 @@ void Game::pollEvents() {
                 m_visualizeToggled = true;
             } else if( event.key.keysym.sym == SDLK_ESCAPE) {
                 m_shouldQuit = true;
+            } else if( event.key.keysym.sym == SDLK_m ) {
+                m_menuToggled = true;
             }
         }
     }
@@ -78,4 +81,8 @@ bool Game::shouldQuit() const {
 
 bool Game::visualizeToggled() const {
     return m_visualizeToggled;
+}
+
+bool Game::menuToggled() const {
+    return m_menuToggled;
 }

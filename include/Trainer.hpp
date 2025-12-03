@@ -35,4 +35,5 @@ private:
     std::unique_ptr<World> vis_world;
     
     bool visualize_mode;
+    bool menu_mode;
 };
