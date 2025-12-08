@@ -56,7 +56,8 @@ void Game::presentScene() {
 
 void Game::pollEvents() {
     // Reset toggle flag each frame
-    m_visualizeToggled = false; 
+    m_visualizeToggled = false;
+    m_menuToggled = false;
 
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
