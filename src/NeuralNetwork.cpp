@@ -32,8 +32,6 @@ NeuralNetwork::NeuralNetwork(const std::vector<size_t>& topology, ActivationType
     }
 }
 
-// public methods
-
 std::vector<double> NeuralNetwork::feedForward(const std::vector<double>& inputs) {
     if (inputs.size() != topology[0]) {
         throw std::invalid_argument("Input vector size does not match input layer topology.");
@@ -99,7 +97,6 @@ void NeuralNetwork::setGenes(const std::vector<double>& genes) {
 }
 
 // private methods
-
 void NeuralNetwork::setActivation(ActivationType funcType) {
     switch (funcType) {
         case ActivationType::SIGMOID:
