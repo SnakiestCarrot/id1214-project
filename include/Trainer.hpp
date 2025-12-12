@@ -42,7 +42,7 @@ private:
     const int FPS = 120;
     const int MAX_STEPS_PER_GAME = 2500;
 
-    Game m_game; 
+    Game m_game;
     Population m_population;
     TrainerState m_state;
 
