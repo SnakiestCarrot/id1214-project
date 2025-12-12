@@ -1,81 +1,41 @@
-// in src/Game.cpp
 #include "Game.hpp"
-#include <iostream>
 
-Game::Game()
-    : window(nullptr), 
-      renderer(nullptr), 
-      m_shouldQuit(false), 
-      m_visualizeToggled(false)
-{
-    
-}
+Game::Game() : m_window(nullptr), m_renderer(nullptr), m_isRunning(false) {}
 
 Game::~Game() {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    clean();
+}
+
+bool Game::init(const char* title, int width, int height) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        std::cout << "SDL failed: " << SDL_GetError() << std::endl;
+        return false;
+    }
+    m_window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
+    if (!m_window) return false;
+
+    m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!m_renderer) return false;
+
+    m_isRunning = true;
+    return true;
+}
+
+bool Game::pollEvent(SDL_Event& event) {
+    return SDL_PollEvent(&event);
+}
+
+void Game::clear() {
+    SDL_SetRenderDrawColor(m_renderer, 20, 20, 20, 255);
+    SDL_RenderClear(m_renderer);
+}
+
+void Game::present() {
+    SDL_RenderPresent(m_renderer);
+}
+
+void Game::clean() {
+    SDL_DestroyRenderer(m_renderer);
+    SDL_DestroyWindow(m_window);
     SDL_Quit();
-    std::cout << "SDL shut down cleanly. Exiting." << std::endl;
-}
-
-bool Game::init() {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cerr << "Failed to initialize SDL: " << SDL_GetError() << std::endl;
-        return false;
-    }
-    std::cout << "SDL initialized successfully!" << std::endl;
-
-    window = SDL_CreateWindow("snake", 100, 100, 1002, 602, 0);
-    if (!window) {
-        std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
-        return false;
-    }
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
-        return false;
-    }
-    
-    return true; // Success
-}
-
-SDL_Renderer* Game::getRenderer() {
-    return renderer;
-}
-
-void Game::prepareScene() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-}
-
-void Game::presentScene() {
-    SDL_RenderPresent(renderer);
-}
-
-void Game::pollEvents() {
-    // Reset toggle flag each frame
-    m_visualizeToggled = false; 
-
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            m_shouldQuit = true;
-        }
-        if (event.type == SDL_KEYDOWN) {
-            if (event.key.keysym.sym == SDLK_v) {
-                m_visualizeToggled = true;
-            } else if( event.key.keysym.sym == SDLK_ESCAPE) {
-                m_shouldQuit = true;
-            }
-        }
-    }
-}
-
-bool Game::shouldQuit() const {
-    return m_shouldQuit;
-}
-
-bool Game::visualizeToggled() const {
-    return m_visualizeToggled;
 }

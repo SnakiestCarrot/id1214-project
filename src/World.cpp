@@ -8,10 +8,9 @@
 #include "Snake.hpp"
 #include "Food.hpp"
 
-// Use an initializer list to store the reference
-World::World(Snake& snake, Food& food) : snake(snake), food(food) {
-    this->width = 1000;
-    this->height = 600;
+World::World(Snake& snake, Food& food, int width, int height) 
+    : snake(snake), food(food), width(width), height(height) {
+    
     this->cell_size = 20;
     this->score = 0;
     food.move_randomly(width / cell_size, height / cell_size);
@@ -193,15 +192,10 @@ std::vector<double> World::get_game_state() {
 }
 
 void World::handle_ai_input(NeuralNetwork& brain) {
-    // 1. Get the current "senses" from the game world
     std::vector<double> inputs = get_game_state();
 
-    // 2. Feed them to the neural network
     std::vector<double> outputs = brain.feedForward(inputs);
 
-    // 3. Interpret the network's decision
-    // Find the index of the highest output value.
-    // 0 = Turn Left, 1 = Go Straight, 2 = Turn Right
     auto max_it = std::max_element(outputs.begin(), outputs.end());
     int decision = std::distance(outputs.begin(), max_it);
 
@@ -209,18 +203,18 @@ void World::handle_ai_input(NeuralNetwork& brain) {
     Direction new_dir = current_dir;
 
     switch (decision) {
-        case 0: // --- Turn Left (Relative)
+        case 0: // turn left (relative)
             if (current_dir == UP) new_dir = LEFT;
             else if (current_dir == LEFT) new_dir = DOWN;
             else if (current_dir == DOWN) new_dir = RIGHT;
             else if (current_dir == RIGHT) new_dir = UP;
             break;
         
-        case 1: // --- Go Straight
-            // No change
+        case 1: // go straight
+            // no change
             break;
 
-        case 2: // --- Turn Right (Relative)
+        case 2: // turn Right (relative)
             if (current_dir == UP) new_dir = RIGHT;
             else if (current_dir == RIGHT) new_dir = DOWN;
             else if (current_dir == DOWN) new_dir = LEFT;

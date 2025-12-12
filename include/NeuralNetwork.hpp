@@ -5,7 +5,6 @@
 #include <string>
 #include <random>     
 
-// Define the activation function types you'll support
 enum class ActivationType {
     SIGMOID,
     RELU,
@@ -20,7 +19,6 @@ public:
      * of neurons in each layer. (e.g., {5, 8, 3})
      * @param funcType The activation function to use (e.g., RELU)
      */
-    // CHANGED: std::vector<int> to std::vector<size_t>
     NeuralNetwork(const std::vector<size_t>& topology, ActivationType funcType);
 
     /**
@@ -49,18 +47,17 @@ private:
         std::vector<double> biases;
     };
 
-    // CHANGED: std::vector<int> to std::vector<size_t>
     std::vector<size_t> topology;
     std::vector<Layer> layers; 
     std::function<double(double)> activation; 
 
     static std::mt19937 randomEngine;
 
-    // --- Private Helper Functions ---
+    // Helpers
     void setActivation(ActivationType funcType);
     static double getRandomDouble();
 
-    // --- Static Activation Functions ---
+    // Activation functions
     static double sigmoid(double x) { return 1.0 / (1.0 + std::exp(-x)); }
     static double relu(double x) { return std::max(0.0, x); }
     static double tanh(double x) { return std::tanh(x); }

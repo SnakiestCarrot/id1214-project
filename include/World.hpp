@@ -8,7 +8,7 @@
 
 class World {
 public:
-    World(Snake& snake, Food& food);
+    World(Snake& snake, Food& food, int width, int height);
     void update();
     void draw(SDL_Renderer *renderer);
     void handle_input(SDL_Event& event);
