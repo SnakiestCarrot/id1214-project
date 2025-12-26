@@ -40,7 +40,7 @@ sudo dnf install @development-tools SDL2-devel
 
 ```bash
 make
-./bin/release/main
+./build/bin/snake
 ```
 
 ## Highlights
