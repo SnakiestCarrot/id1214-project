@@ -24,7 +24,6 @@ private:
     std::vector<NeuralNetwork> population;
     std::vector<double> fitness;
     
-    // Topology is no longer const because we might change it on reset
     std::vector<size_t> topology; 
     
     size_t generation;
